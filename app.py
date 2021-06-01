@@ -99,7 +99,8 @@ def uploadpreprocess():
         df = pd.read_csv(get_dataset)
         df = df.fillna(method = 'ffill')
         sc = StandardScaler()
-        df[feature] = sc.fit_transform(df[feature])
+        if len(feature):
+            df[feature] = sc.fit_transform(df[feature])
         
         labelkrnewala = LabelEncoder()
         if len(labelencode):
