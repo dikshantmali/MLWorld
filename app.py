@@ -26,9 +26,8 @@ app = Flask(__name__)
 
 # this is the path to save dataset for preprocessing
 pathfordataset = "static/data-preprocess/"
-pathfordatasetNew = "data-preprocess/new"   
 app.config['DFPr'] = pathfordataset
-app.config['DFPrNew'] = pathfordatasetNew
+app.config['dataset_name_to_use_for_preprocessing'] = ''
 
 
 
@@ -75,47 +74,45 @@ def preprocessing():
     return render_template('preprocessing/preprocessing.html')
 
 
+
+@app.route('/preprocessing/dataadd' , methods = ['GET','POST'])
+def dataadd():
+    if request.method == 'POST':
+        my_dataset = request.files['my_dataset']
+        app.config['dataset_name_to_use_for_preprocessing'] = my_dataset.filename
+        dataset_path = os.path.join(pathfordataset,secure_filename(my_dataset.filename))
+        my_dataset.save(dataset_path)
+        get_dataset = os.path.join(app.config['DFPr'],secure_filename(my_dataset.filename))           
+        df = pd.read_csv(get_dataset)
+
+        
+    return render_template('/preprocessing/preprocessing.html'
+    ,col = df.columns.tolist()
+    )
+
 @app.route('/preprocessing/preprocessing' , methods = ['GET','POST'])
 def uploadpreprocess():
     if request.method == 'POST':
-        my_dataset = request.files['my_dataset']
-        my_model_name = request.form['name_of_model']
-        data_std = request.form['flexRadioDefault']
-        dataset_path = os.path.join(pathfordataset, secure_filename(my_dataset.filename))
-        my_dataset.save(dataset_path)
-        get_dastaset = os.path.join(app.config['DFPr'],secure_filename(my_dataset.filename))
-        df = pd.read_csv(get_dastaset)
-        df = df.fillna(method='ffill')
-        col_no = df.shape[1]
-
-        cols = df.columns
-        num_cols = df._get_numeric_data().columns
-        cat_col=list(set(cols) - set(num_cols)) 
-
-
-        temp = 0
-        labelencoder = LabelEncoder()
-        # taking care of cataagorical data
-        for i in df.columns:
-            for x in cat_col:
-                if x==i:
-                    df.iloc[:, temp] = labelencoder.fit_transform(df.iloc[:, temp])
-            temp = temp + 1
+        get_dataset = os.path.join(app.config['DFPr'],secure_filename(app.config['dataset_name_to_use_for_preprocessing']))
+        feature = request.form.getlist('features')
+        labelencode=request.form.getlist('labelencode')
+        df = pd.read_csv(get_dataset)
+        df = df.fillna(method = 'ffill')
+        sc = StandardScaler()
+        df[feature] = sc.fit_transform(df[feature])
         
-        # taking care of missing data
-        imputer = SimpleImputer(missing_values=np.NAN, strategy='mean', fill_value=None, verbose=1, copy=True)
-        imputer = imputer.fit(df.iloc[:, 0:col_no])
-        df.iloc[:, 0:col_no] = imputer.transform(df.iloc[:, 0:col_no])
+        labelkrnewala = LabelEncoder()
+        if len(labelencode):
+            for item in labelencode:
+                df[item] = labelkrnewala.fit_transform(df[item])
 
-        # standerization
-        
-        if data_std == "yes":
-            sc_X = StandardScaler()
-            df = sc_X.fit_transform(df)
         trained_dataset = pd.DataFrame(df)
+
         trained_dataset.to_csv("static/data-preprocess/new/trained_dataset.csv")
 
-        return render_template('/preprocessing/preprocessing_output.html', model_name=my_model_name, data_shape=trained_dataset.shape, table=trained_dataset.head(5).to_html(classes='table table-striped table-dark table-hover x'), dataset_describe=trained_dataset.describe().to_html(classes='table table-striped table-dark table-hover x'), )
+        return render_template('/preprocessing/preprocessing_output.html', data_shape=trained_dataset.shape, table=trained_dataset.head(5).to_html(classes='table table-striped table-dark table-hover x'), dataset_describe=trained_dataset.describe().to_html(classes='table table-striped table-dark table-hover x') )
+
+
 
 @app.route('/downloadNewDataset')
 def download_file():
@@ -179,7 +176,6 @@ def upload():
 @app.route('/supervised/regression/linearregressionwithMVAR')
 def multiregressionLR():
     return render_template('/supervised/regression/linearregressionwithMVAR.html')
-
 
 
 

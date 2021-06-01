@@ -10,14 +10,14 @@
     <!-- Bootstrap CSS -->
     <link href="{{ url_for('static',filename = 'css/bootstrap.min.css')  }}" rel="stylesheet">
 
-    <link href="{{ url_for('static',filename = 'css/style.css')  }}" rel="stylesheet">
+    <link href="{{ url_for('static',filename = 'css/all.css')  }}" rel="stylesheet">
 
     <title>ML Trainer</title>
 </head>
 <body style="background-color: #fff;">
 
     <!-- navbar -->
-    <nav style="width: 100%;" class="navbar navbar-dark bg-secondary">
+    <nav style="width: 100%;" class="navbar navbar-dark bg-dark">
         <a class="  navbar-brand" href="#" style="margin-left: 25px;">
             Data preprocessing for ML...
         </a>
@@ -25,7 +25,7 @@
 
     <div class="container">
     
-        <div class="jum" style="background-color: rgba(108, 117, 125, 0.7);">
+        <div class="jum" style="background-color: rgba(0, 0, 0, 0.5);">
     <br>
             <h3 class="display-10" style="color: #fff;">Provide Details Below...</h3>
             <br>
@@ -39,38 +39,57 @@
             <br><br>
     
    
-            <form method="POST" action="/preprocessing/preprocessing" enctype="multipart/form-data">
+            <form method="POST" action="/preprocessing/dataadd" enctype="multipart/form-data">
                 <div class="input-group">
                     <input type="file" class="form-control" name="my_dataset" accept=".csv,.xlsx">
     
                 </div>
                 <br>
-                <div class="input-group">
-                    <span class="input-group-text">Model Name</span>
-                    <input type="text" name="name_of_model" value="Data Preprocessing" class="form-control">
-                </div>
-    
-                <br><br>
-                <h4 style="color: white;">Do you like to do Data Standerization ?</h4>
-                <div class="form-check">
-                    <input class="form-check-input" value="yes" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                    <label class="form-check-label" for="flexRadioDefault1" style="color: whitesmoke;">
-                        Yes 
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" value="no" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-                    <label class="form-check-label" for="flexRadioDefault2" style="color: whitesmoke;">
-                        No  
-                    </label>
-                </div>
-                
-
-                <br><br>
-    
-                <button onclick="$('#loading').show();" type="submit" class="btn btn-outline-light">Process Data... &#8987;
-                </button>
+                <button type="submit" class="btn btn-success">Add</button>  
             </form>
+
+
+<br>
+            <button onclick="myfunction()" class="btn btn-outline-dark">Explore After <b>Adding</b> The Dataset</button>
+            <br>
+            
+            <div id="show_content" style="visibility: hidden; display: none; height: 0px;" >
+                
+                <br>
+                
+                <form method="POST" action="/preprocessing/preprocessing" >
+                    <h2>Choose the column name for standard scaling from the below provided options</h2>
+                    {% for i in col %}
+                    
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" value="{{i}}" name="features" type="checkbox">  {{ i }}
+                    </div>
+                    
+                    
+                    {% endfor %}
+                    
+                    <br>
+                    <h2>Choose the column for Label encoding</h2>
+                    {% for i in col %}
+                    
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" value="{{i}}" name="labelencode" type="checkbox">  {{ i }}
+                    </div>
+                    
+                    
+                    {% endfor %}
+                    
+                    <br>
+                    <button onclick="$('#loading').show();" type="submit" class="btn btn-outline-dark">Start Preprocessing &#8987; </button>
+                    
+                    <div id="loading"  style="display:none;"><center><img class="img img-fluid" style="height:auto;width: auto;" src="{{ url_for('static' , filename = 'image/loading.gif') }}" alt="" />
+                    </center></div>
+                </form>
+            </div>
+
+
+
+
             <br>
             <div id="loading" style="display:none;">
                 <center><img class="img img-fluid" style="height:auto;width: auto;"
@@ -82,23 +101,31 @@
     </div>
 
     <!-- footer -->
-    <div class="fixed-bottom ">
-        <div class="bg-secondary " style="min-height: 40px;">
+    <!-- <div class="fixed-bottom ">
+        <div class="bg-dark " style="min-height: 40px;">
     
             <marquee style="color:#fff; margin-top: 7px;">
-                <h9>Copyright@ Pritesh Kumar</h9>
+                <h9>Copyright@ </h9>
             </marquee>
         </div>
-    </div>
+    </div> -->
     <!-- change later-->
     <script src="{{ url_for('static',filename = 'js/bootstrap.bundle.min.js')  }}"></script>
     
 
 
 
-    <!-- script -->
     <script>
-        $document
+        function myfunction() {
+            var x = document.getElementById("show_content");
+            
+            
+            x.style.visibility = "visible";
+            x.style.display = "block";
+            x.style.height = "auto";
+            
+            
+        }
     </script>
 </body>
     

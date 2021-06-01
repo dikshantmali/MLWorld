@@ -25,7 +25,7 @@
             <p class="lead"><span style='font-size:40px;'>&#128522; Enjoy The power of Elliot</span> </p>
             
             <h1 class="display-10">Provide Details Below</h1>
-            <br><br>
+         <br>
 
 
 
@@ -34,19 +34,27 @@
 
 
             <form method="POST" action="/supervised/regression/linearregression" enctype="multipart/form-data">
+                <h4 style="color: salmon">( please do provide single variable dataset... )</h4>
+               <br>
                 <div class="input-group">
-                    <input type="file" class="form-control" name="my_dataset" accept=".csv,.xlsx">
                     
-                  </div>
-                    <br>
+                    <input type="file" class="form-control" name="my_dataset" placeholder="hi" accept=".csv,.xlsx">
+    
+                </div>
+                <div style="margin-top: 10px; margin-left: 20px; color: black;">
+                    <label> If your want to pre-process data alone..<a href="/preprocessing" > Click Here <a></label>
+                </div>
+                
+                <br>
                 <div class="input-group">
                     <span class="input-group-text">Model Name</span>
-                    <input type="text" name="name_of_model"  class="form-control">
-                  </div>         
-                      
-                  <br><br>              
-
-                <button onclick="$('#loading').show();" type="submit" class="btn btn-outline-dark">Train Model &#8987; </button>
+                    <input type="text" value="LinearRegression" name="name_of_model" class="form-control">
+                </div>
+    
+                <br><br>
+    
+                <button onclick="$('#loading').show();" type="submit" class="btn btn-outline-dark">Train Model &#8987;
+                </button>
             </form>
    <br>
             <div id="loading"  style="display:none;"><center><img class="img img-fluid" style="height:auto;width: auto;" src="{{ url_for('static' , filename = 'image/loading.gif') }}" alt="" /></center></div>
